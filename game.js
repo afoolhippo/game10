@@ -4,6 +4,9 @@ const resultScreen = document.getElementById("resultScreen");
 
 const startBtn = document.getElementById("startBtn");
 const retryBtn = document.getElementById("retryBtn");
+const backBtn = document.getElementById("backBtn");
+const shareBtn = document.getElementById("shareBtn");
+const homeBtn = document.getElementById("homeBtn");
 
 const vineLayer = document.getElementById("vineLayer");
 const monkey = document.getElementById("monkey");
@@ -22,7 +25,6 @@ const downBtn = document.getElementById("downBtn");
 
 const countdown = document.getElementById("countdown");
 const fade = document.getElementById("fade");
-
 const bgm = document.getElementById("bgm");
 
 let gameWidth = 0;
@@ -55,6 +57,8 @@ let bgmFadeTimer = null;
 
 const maxHp = 5;
 const monkeyX = 80;
+const gameUrl = "https://afoolhippo.github.io/game10/";
+const homeUrl = "https://afoolhippo.github.io/home/?skipTitle=1";
 
 function showScreen(screen){
   titleScreen.classList.remove("active");
@@ -75,7 +79,7 @@ function startBGM(){
   bgm.loop = true;
 
   if(bgm.paused){
-    bgm.volume = 1;
+    bgm.volume = 0.5;
     bgm.play().catch(()=>{});
   }
 }
@@ -85,7 +89,7 @@ function setBGMVolume(volume){
   bgm.volume = Math.max(0, Math.min(1, volume));
 }
 
-function fadeInBGM(){
+function fadeBGMTo(targetVolume, duration = 900){
   if(!bgm) return;
 
   if(bgmFadeTimer){
@@ -93,19 +97,19 @@ function fadeInBGM(){
     bgmFadeTimer = null;
   }
 
-  let v = bgm.volume || 0.5;
+  const startVolume = bgm.volume;
+  const diff = targetVolume - startVolume;
+  const startTime = performance.now();
 
   bgmFadeTimer = setInterval(()=>{
-    v += 0.05;
+    const t = Math.min(1, (performance.now() - startTime) / duration);
+    bgm.volume = startVolume + diff * t;
 
-    if(v >= 1){
-      v = 1;
+    if(t >= 1){
       clearInterval(bgmFadeTimer);
       bgmFadeTimer = null;
     }
-
-    bgm.volume = v;
-  },80);
+  },30);
 }
 
 function startGame(){
@@ -124,6 +128,7 @@ function startGame(){
 
 function prepareStage(withCountdown){
   playing = false;
+
   scrollX = 0;
   hitCooldown = 0;
   inputDir = 0;
@@ -152,10 +157,11 @@ function prepareStage(withCountdown){
 }
 
 function startStage(){
-  fadeInBGM();
+  fadeBGMTo(1, 900);
 
   playing = true;
   lastTime = performance.now();
+
   requestAnimationFrame(loop);
 }
 
@@ -220,12 +226,12 @@ function generateStage(){
 
     topPoints.push({
       x,
-      y:centerY - gapHeight / 2
+      y: centerY - gapHeight / 2
     });
 
     bottomPoints.push({
       x,
-      y:centerY + gapHeight / 2
+      y: centerY + gapHeight / 2
     });
 
     const bandageChance = Math.max(0.018, 0.055 - stage * 0.002);
@@ -236,9 +242,9 @@ function generateStage(){
       Math.random() < bandageChance
     ){
       bandages.push({
-        x:x + 45,
-        y:centerY + (Math.random() - 0.5) * (gapHeight * 0.4),
-        used:false
+        x: x + 45,
+        y: centerY + (Math.random() - 0.5) * (gapHeight * 0.4),
+        used: false
       });
     }
   }
@@ -273,8 +279,8 @@ function draw(){
 
   drawPath(topPoints);
   drawPath(bottomPoints);
-  drawThorns(topPoints,true);
-  drawThorns(bottomPoints,false);
+  drawThorns(topPoints, true);
+  drawThorns(bottomPoints, false);
   drawBandages();
   drawBanana();
 }
@@ -291,18 +297,18 @@ function drawPath(points){
   vineLayer.appendChild(vine);
 }
 
-function getPointOnSegment(a,b,x){
+function getPointOnSegment(a, b, x){
   const t = (x - a.x) / (b.x - a.x);
   return a.y + (b.y - a.y) * t;
 }
 
-function drawThorns(points,isTop){
+function drawThorns(points, isTop){
   for(let i = 0; i < points.length - 1; i++){
     const a = points[i];
     const b = points[i + 1];
 
     for(let x = a.x; x < b.x; x += thornInterval){
-      const y = getPointOnSegment(a,b,x);
+      const y = getPointOnSegment(a, b, x);
       const sx = x - scrollX;
 
       if(sx < -50 || sx > gameWidth + 50) continue;
@@ -355,13 +361,13 @@ function drawBanana(){
   banana.style.top = `${bananaY}px`;
 }
 
-function getY(points,worldX){
+function getY(points, worldX){
   for(let i = 0; i < points.length - 1; i++){
     const a = points[i];
     const b = points[i + 1];
 
     if(worldX >= a.x && worldX <= b.x){
-      return getPointOnSegment(a,b,worldX);
+      return getPointOnSegment(a, b, worldX);
     }
   }
 
@@ -373,16 +379,16 @@ function getY(points,worldX){
 }
 
 function getGapCenterY(worldX){
-  const topY = getY(topPoints,worldX);
-  const bottomY = getY(bottomPoints,worldX);
+  const topY = getY(topPoints, worldX);
+  const bottomY = getY(bottomPoints, worldX);
   return (topY + bottomY) / 2;
 }
 
 function collisionCheck(){
   const worldX = scrollX + monkeyX;
 
-  const topY = getY(topPoints,worldX);
-  const bottomY = getY(bottomPoints,worldX);
+  const topY = getY(topPoints, worldX);
+  const bottomY = getY(bottomPoints, worldX);
 
   const hitMargin = 31;
 
@@ -456,11 +462,74 @@ function checkGoal(){
 }
 
 function getRankName(clearedStage){
-  if(clearedStage <= 2) return "トゲまみれモンキー";
-  if(clearedStage <= 4) return "すり傷モンキー";
-  if(clearedStage <= 6) return "イバラ慣れモンキー";
-  if(clearedStage <= 9) return "ツルぬけモンキー";
+  if(clearedStage <= 1){
+    return "半泣きモンキー";
+  }
+
+  if(clearedStage <= 3){
+    return "汗だくモンキー";
+  }
+
   return "サルトリモンキー";
+}
+
+function getResultImage(clearedStage){
+  if(clearedStage <= 1){
+    return "result_bad.png";
+  }
+
+  if(clearedStage <= 3){
+    return "result_normal.png";
+  }
+
+  return "result_good.png";
+}
+
+function getShareText(clearedStage, reachedStage){
+  const rank = getRankName(clearedStage);
+
+  if(clearedStage <= 1){
+    return `トゲだらけになった…🌿🐒
+
+STAGE ${reachedStage}
+
+${rank}
+
+無料ブラウザゲーム
+「サルトリイバラ」
+${gameUrl}
+
+#サルトリイバラ
+#カバゲーセン`;
+  }
+
+  if(clearedStage <= 3){
+    return `イバラをくぐり抜けた…！🌿💦🐒
+
+STAGE ${reachedStage}
+
+${rank}
+
+無料ブラウザゲーム
+「サルトリイバラ」
+${gameUrl}
+
+#サルトリイバラ
+#カバゲーセン`;
+  }
+
+  return `サルトリモンキーになった🍌🐒
+
+STAGE ${reachedStage}
+
+${rank}
+
+無料ブラウザゲーム
+「サルトリイバラ」
+${gameUrl}
+
+#サルトリイバラ
+#カバゲーセン`;
 }
 
 function nextStage(){
@@ -491,6 +560,8 @@ function gameOver(){
   velocityY = 0;
 
   const clearedStage = Math.max(0, stage - 1);
+  const reachedStage = stage;
+  const rank = getRankName(clearedStage);
 
   fade.classList.add("show");
 
@@ -499,20 +570,21 @@ function gameOver(){
     fade.classList.remove("show");
 
     resultTitle.textContent = "RESULT";
-
-    if(clearedStage <= 2){
-      resultCharacter.src = "result_bad.png";
-    }else if(clearedStage >= 7){
-      resultCharacter.src = "result_good.png";
-    }else{
-      resultCharacter.src = "result_normal.png";
-    }
+    resultCharacter.src = getResultImage(clearedStage);
 
     resultMessage.innerHTML = `
-      到達 STAGE ${stage}<br>
-      クリア ${clearedStage} 面<br><br>
-      ${getRankName(clearedStage)}
+      STAGE ${reachedStage}<br><br>
+      ${rank}
     `;
+
+    shareBtn.onclick = ()=>{
+      const shareText = getShareText(clearedStage, reachedStage);
+      const url =
+        "https://twitter.com/intent/tweet?text=" +
+        encodeURIComponent(shareText);
+
+      window.open(url, "_blank");
+    };
   },550);
 }
 
@@ -583,30 +655,42 @@ function releaseMove(e){
   inputDir = 0;
 }
 
-upBtn.addEventListener("pointerdown",pressUp);
-downBtn.addEventListener("pointerdown",pressDown);
+upBtn.addEventListener("pointerdown", pressUp);
+downBtn.addEventListener("pointerdown", pressDown);
 
-upBtn.addEventListener("pointerup",releaseMove);
-downBtn.addEventListener("pointerup",releaseMove);
+upBtn.addEventListener("pointerup", releaseMove);
+downBtn.addEventListener("pointerup", releaseMove);
 
-upBtn.addEventListener("pointercancel",releaseMove);
-downBtn.addEventListener("pointercancel",releaseMove);
+upBtn.addEventListener("pointercancel", releaseMove);
+downBtn.addEventListener("pointercancel", releaseMove);
 
-upBtn.addEventListener("pointerleave",releaseMove);
-downBtn.addEventListener("pointerleave",releaseMove);
+upBtn.addEventListener("pointerleave", releaseMove);
+downBtn.addEventListener("pointerleave", releaseMove);
 
-window.addEventListener("keydown",(e)=>{
+window.addEventListener("keydown", (e)=>{
   if(e.key === "ArrowUp") inputDir = -1;
   if(e.key === "ArrowDown") inputDir = 1;
 });
 
-window.addEventListener("keyup",(e)=>{
+window.addEventListener("keyup", (e)=>{
   if(e.key === "ArrowUp" || e.key === "ArrowDown"){
     inputDir = 0;
   }
 });
 
-startBtn.addEventListener("click",startGame);
-retryBtn.addEventListener("click",startGame);
+startBtn.addEventListener("click", startGame);
+retryBtn.addEventListener("click", startGame);
 
-window.addEventListener("resize",resizeGame);
+backBtn.addEventListener("click", ()=>{
+  playing = false;
+  inputDir = 0;
+  velocityY = 0;
+  setBGMVolume(0.5);
+  showScreen(titleScreen);
+});
+
+homeBtn.addEventListener("click", ()=>{
+  location.href = homeUrl;
+});
+
+window.addEventListener("resize", resizeGame);

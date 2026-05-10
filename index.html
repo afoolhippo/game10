@@ -10,13 +10,29 @@
 
 <div id="game">
 
+  <!-- タイトル -->
   <div id="titleScreen" class="screen active">
-    <h1>サルトリイバラ</h1>
-    <p>トゲをよけて<br>バナナをめざせ</p>
-    <button id="startBtn">START</button>
+
+    <img id="titleImage" src="title.png" alt="サルトリイバラ">
+
+    <div class="ruleText">
+      トゲをよけて<br>
+      🍌をめざせ！
+    </div>
+
+    <button id="startBtn">
+      タップしてスタート
+    </button>
+
   </div>
 
+  <!-- プレイ -->
   <div id="playScreen" class="screen">
+
+    <button id="backBtn">
+      タイトルへ戻る
+    </button>
+
     <div id="hud">
       <span id="stageText">STAGE 1</span>
       <span id="hpText">♥♥♥♥♥</span>
@@ -24,8 +40,9 @@
 
     <svg id="vineLayer"></svg>
 
-    <div id="banana">🍌</div>
-    <div id="monkey">🐒</div>
+    <img id="banana" src="banana.png" alt="banana">
+    <img id="monkey" src="saru.png" alt="saru">
+
     <div id="damageText">イタッ</div>
 
     <div id="controls">
@@ -35,16 +52,41 @@
 
     <div id="countdown"></div>
     <div id="fade"></div>
+
   </div>
 
+  <!-- 結果 -->
   <div id="resultScreen" class="screen">
+
     <h2 id="resultTitle">RESULT</h2>
-    <p id="resultMessage"></p>
-    <button id="retryBtn">もう一回</button>
+
+    <img id="resultCharacter" src="result_normal.png">
+
+    <div id="resultMessage"></div>
+
+    <div id="resultButtons">
+
+      <button id="shareBtn">
+        Xでシェア
+      </button>
+
+      <button id="retryBtn">
+        もう1回遊ぶ
+      </button>
+
+      <button id="homeBtn">
+        カバゲーセンへ
+      </button>
+
+    </div>
+
   </div>
 
 </div>
 
+<audio id="bgm" src="bgm.mp3" preload="auto"></audio>
+
 <script src="game.js"></script>
+
 </body>
 </html>
