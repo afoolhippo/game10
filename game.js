@@ -27,6 +27,12 @@ const countdown = document.getElementById("countdown");
 const fade = document.getElementById("fade");
 const bgm = document.getElementById("bgm");
 
+const seStart = new Audio("start.mp3");
+const seDamage = new Audio("damage.mp3");
+const seHeal = new Audio("heal.mp3");
+const seClear = new Audio("clear.mp3");
+const seResult = new Audio("result.mp3");
+
 let gameWidth = 0;
 let gameHeight = 0;
 
@@ -56,9 +62,17 @@ let hitCooldown = 0;
 let bgmFadeTimer = null;
 
 const maxHp = 5;
+const maxStage = 5;
 const monkeyX = 80;
+
 const gameUrl = "https://afoolhippo.github.io/game10/";
 const homeUrl = "https://afoolhippo.github.io/home/?skipTitle=1";
+
+function playSE(sound){
+  if(!sound) return;
+  sound.currentTime = 0;
+  sound.play().catch(()=>{});
+}
 
 function showScreen(screen){
   titleScreen.classList.remove("active");
@@ -82,6 +96,18 @@ function startBGM(){
     bgm.volume = 0.5;
     bgm.play().catch(()=>{});
   }
+}
+
+function stopBGM(){
+  if(!bgm) return;
+
+  if(bgmFadeTimer){
+    clearInterval(bgmFadeTimer);
+    bgmFadeTimer = null;
+  }
+
+  bgm.pause();
+  bgm.currentTime = 0;
 }
 
 function setBGMVolume(volume){
@@ -116,6 +142,7 @@ function startGame(){
   stage = 1;
   hp = maxHp;
 
+  playSE(seStart);
   startBGM();
 
   showScreen(playScreen);
@@ -197,10 +224,12 @@ function runCountdown(callback){
 }
 
 function updateDifficulty(){
-  gapHeight = Math.max(80, 130 - stage * 4);
-  scrollSpeed = 2.65 + stage * 0.14;
-  wavePower = Math.min(150, 95 + stage * 5);
-  thornInterval = Math.max(32, 54 - stage);
+  const progress = stage - 1;
+
+  gapHeight = Math.max(80, 150 - progress * 17);
+  scrollSpeed = 2.35 + progress * 0.22;
+  wavePower = 70 + progress * 18;
+  thornInterval = Math.max(36, 70 - progress * 8);
 }
 
 function updateHUD(){
@@ -234,7 +263,7 @@ function generateStage(){
       y: centerY + gapHeight / 2
     });
 
-    const bandageChance = Math.max(0.018, 0.055 - stage * 0.002);
+    const bandageChance = Math.max(0.015, 0.06 - stage * 0.006);
 
     if(
       x > 500 &&
@@ -406,6 +435,8 @@ function damage(){
   hitCooldown = 1000;
   hp--;
 
+  playSE(seDamage);
+
   if(hp <= 2){
     monkey.src = "result_bad.png";
   }else{
@@ -444,6 +475,8 @@ function checkBandages(){
       b.used = true;
       hp = Math.min(maxHp, hp + 1);
 
+      playSE(seHeal);
+
       if(hp >= 3){
         monkey.src = "saru.png";
       }
@@ -457,7 +490,7 @@ function checkGoal(){
   const monkeyWorldX = scrollX + monkeyX;
 
   if(monkeyWorldX >= bananaWorldX){
-    nextStage();
+    stageClear();
   }
 }
 
@@ -485,8 +518,23 @@ function getResultImage(clearedStage){
   return "result_good.png";
 }
 
-function getShareText(clearedStage, reachedStage){
+function getShareText(clearedStage, reachedStage, isClear){
   const rank = getRankName(clearedStage);
+
+  if(isClear){
+    return `サルトリモンキーになった🍌🐒
+
+全5面クリア！
+
+${rank}
+
+無料ブラウザゲーム
+「サルトリイバラ」
+${gameUrl}
+
+#サルトリイバラ
+#カバゲーセン`;
+  }
 
   if(clearedStage <= 1){
     return `トゲだらけになった…🌿🐒
@@ -532,10 +580,17 @@ ${gameUrl}
 #カバゲーセン`;
 }
 
-function nextStage(){
+function stageClear(){
   playing = false;
   inputDir = 0;
   velocityY = 0;
+
+  playSE(seClear);
+
+  if(stage >= maxStage){
+    clearGame();
+    return;
+  }
 
   monkey.src = "result_good.png";
 
@@ -554,6 +609,51 @@ function nextStage(){
   },550);
 }
 
+function showResult(clearedStage, reachedStage, isClear){
+  stopBGM();
+  playSE(seResult);
+
+  showScreen(resultScreen);
+  fade.classList.remove("show");
+
+  resultTitle.textContent = isClear ? "CLEAR!" : "RESULT";
+  resultCharacter.src = getResultImage(clearedStage);
+
+  if(isClear){
+    resultMessage.innerHTML = `
+      全5面クリア！<br><br>
+      ${getRankName(clearedStage)}
+    `;
+  }else{
+    resultMessage.innerHTML = `
+      到達 STAGE ${reachedStage}<br>
+      クリア ${clearedStage} 面<br><br>
+      ${getRankName(clearedStage)}
+    `;
+  }
+
+  shareBtn.onclick = ()=>{
+    const shareText = getShareText(clearedStage, reachedStage, isClear);
+    const url =
+      "https://twitter.com/intent/tweet?text=" +
+      encodeURIComponent(shareText);
+
+    window.open(url, "_blank");
+  };
+}
+
+function clearGame(){
+  playing = false;
+  inputDir = 0;
+  velocityY = 0;
+
+  fade.classList.add("show");
+
+  setTimeout(()=>{
+    showResult(maxStage, maxStage, true);
+  },550);
+}
+
 function gameOver(){
   playing = false;
   inputDir = 0;
@@ -561,30 +661,11 @@ function gameOver(){
 
   const clearedStage = Math.max(0, stage - 1);
   const reachedStage = stage;
-  const rank = getRankName(clearedStage);
 
   fade.classList.add("show");
 
   setTimeout(()=>{
-    showScreen(resultScreen);
-    fade.classList.remove("show");
-
-    resultTitle.textContent = "RESULT";
-    resultCharacter.src = getResultImage(clearedStage);
-
-    resultMessage.innerHTML = `
-      STAGE ${reachedStage}<br><br>
-      ${rank}
-    `;
-
-    shareBtn.onclick = ()=>{
-      const shareText = getShareText(clearedStage, reachedStage);
-      const url =
-        "https://twitter.com/intent/tweet?text=" +
-        encodeURIComponent(shareText);
-
-      window.open(url, "_blank");
-    };
+    showResult(clearedStage, reachedStage, false);
   },550);
 }
 
@@ -679,17 +760,25 @@ window.addEventListener("keyup", (e)=>{
 });
 
 startBtn.addEventListener("click", startGame);
-retryBtn.addEventListener("click", startGame);
 
-backBtn.addEventListener("click", ()=>{
+retryBtn.addEventListener("click", ()=>{
+  stopBGM();
   playing = false;
   inputDir = 0;
   velocityY = 0;
-  setBGMVolume(0.5);
+  showScreen(titleScreen);
+});
+
+backBtn.addEventListener("click", ()=>{
+  stopBGM();
+  playing = false;
+  inputDir = 0;
+  velocityY = 0;
   showScreen(titleScreen);
 });
 
 homeBtn.addEventListener("click", ()=>{
+  stopBGM();
   location.href = homeUrl;
 });
 
