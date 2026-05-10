@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=no">
+  <title>サルトリイバラ</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div id="game">
+
+  <div id="titleScreen" class="screen active">
+    <h1>サルトリイバラ</h1>
+    <p>トゲをよけて<br>バナナをめざせ</p>
+    <button id="startBtn">START</button>
+  </div>
+
+  <div id="playScreen" class="screen">
+    <div id="hud">
+      <span id="stageText">STAGE 1</span>
+      <span id="hpText">♥♥♥♥♥</span>
+    </div>
+
+    <svg id="vineLayer"></svg>
+
+    <div id="banana">🍌</div>
+    <div id="monkey">🐒</div>
+    <div id="damageText">イタッ</div>
+
+    <div id="controls">
+      <button id="upBtn">▲</button>
+      <button id="downBtn">▼</button>
+    </div>
+
+    <div id="countdown"></div>
+    <div id="fade"></div>
+  </div>
+
+  <div id="resultScreen" class="screen">
+    <h2 id="resultTitle">RESULT</h2>
+    <p id="resultMessage"></p>
+    <button id="retryBtn">もう一回</button>
+  </div>
+
+</div>
+
+<script src="game.js"></script>
+</body>
+</html>

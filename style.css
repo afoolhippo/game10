@@ -1,0 +1,262 @@
+@import url('https://fonts.googleapis.com/css2?family=DotGothic16&display=swap');
+
+*{
+  box-sizing:border-box;
+  -webkit-tap-highlight-color:transparent;
+  font-family:"DotGothic16",monospace;
+}
+
+html,body{
+  margin:0;
+  width:100%;
+  height:100%;
+  overflow:hidden;
+  background:#cadc9f;
+}
+
+body{
+  display:flex;
+  justify-content:center;
+  align-items:center;
+}
+
+#game{
+  position:relative;
+  width:min(100vw,430px);
+  height:min(100vh,760px);
+  overflow:hidden;
+  background:linear-gradient(#dbe9b8,#b7cf79);
+  border:4px solid #203018;
+}
+
+.screen{
+  display:none;
+  position:absolute;
+  inset:0;
+}
+
+.screen.active{
+  display:block;
+}
+
+#titleScreen,
+#resultScreen{
+  text-align:center;
+  padding:20px;
+}
+
+#titleImage{
+  width:100%;
+  margin-top:20px;
+  image-rendering:pixelated;
+}
+
+.ruleText{
+  margin-top:18px;
+  font-size:22px;
+  color:#203018;
+  line-height:1.6;
+}
+
+button{
+  border:none;
+}
+
+#startBtn,
+#retryBtn{
+  margin-top:20px;
+  padding:16px 28px;
+  font-size:20px;
+  background:#f1f0c0;
+  color:#203018;
+  border:3px solid #203018;
+  box-shadow:4px 4px 0 #65763f;
+}
+
+#playScreen{
+  background:
+    repeating-linear-gradient(
+      0deg,
+      rgba(0,0,0,0.04) 0px,
+      rgba(0,0,0,0.04) 2px,
+      transparent 2px,
+      transparent 6px
+    ),
+    linear-gradient(#dbe9b8,#b7cf79);
+}
+
+#hud{
+  position:absolute;
+  top:8px;
+  left:8px;
+  right:8px;
+  z-index:20;
+  display:flex;
+  justify-content:space-between;
+  padding:8px 12px;
+  background:rgba(241,240,192,0.92);
+  border:2px solid #203018;
+  font-size:18px;
+  color:#203018;
+}
+
+#vineLayer{
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+}
+
+.vineShadow{
+  fill:none;
+  stroke:#1f351f;
+  stroke-width:13;
+  opacity:0.4;
+  stroke-linecap:round;
+  stroke-linejoin:round;
+}
+
+.vine{
+  fill:none;
+  stroke:#356936;
+  stroke-width:9;
+  stroke-linecap:round;
+  stroke-linejoin:round;
+}
+
+.thorn{
+  fill:#f1f0c0;
+  stroke:#203018;
+  stroke-width:1.5;
+}
+
+#monkey{
+  position:absolute;
+  left:70px;
+  top:320px;
+  width:72px;
+  z-index:10;
+  transform:translateY(-50%);
+  image-rendering:pixelated;
+}
+
+#banana{
+  position:absolute;
+  width:120px;
+  z-index:5;
+  transform:translate(-50%,-50%);
+  image-rendering:pixelated;
+}
+
+#damageText{
+  position:absolute;
+  display:none;
+  z-index:30;
+  font-size:22px;
+  color:#203018;
+  text-shadow:2px 2px 0 #f1f0c0;
+  pointer-events:none;
+}
+
+#damageText.show{
+  display:block;
+  animation:damagePop 0.45s ease-out forwards;
+}
+
+@keyframes damagePop{
+  0%{
+    opacity:0;
+    transform:translateY(8px) scale(0.8);
+  }
+  30%{
+    opacity:1;
+    transform:translateY(-4px) scale(1.15);
+  }
+  100%{
+    opacity:0;
+    transform:translateY(-18px) scale(1);
+  }
+}
+
+#controls{
+  position:absolute;
+  bottom:14px;
+  left:50%;
+  transform:translateX(-50%);
+  z-index:15;
+  display:flex;
+  gap:20px;
+}
+
+#controls button{
+  width:72px;
+  height:72px;
+  background:#f1f0c0;
+  border:3px solid #203018;
+  font-size:30px;
+  color:#203018;
+  box-shadow:4px 4px 0 #65763f;
+}
+
+#controls button:active{
+  transform:translate(2px,2px);
+  box-shadow:2px 2px 0 #65763f;
+}
+
+#countdown{
+  position:absolute;
+  inset:0;
+  z-index:999;
+  display:none;
+  align-items:center;
+  justify-content:center;
+  flex-direction:column;
+  color:#203018;
+  background:rgba(219,233,184,0.7);
+  text-align:center;
+  text-shadow:3px 3px 0 #f1f0c0;
+}
+
+#countdown .stage-count{
+  font-size:42px;
+  margin-bottom:20px;
+}
+
+#countdown .count-number{
+  font-size:96px;
+}
+
+#fade{
+  position:absolute;
+  inset:0;
+  z-index:500;
+  pointer-events:none;
+  background:#203018;
+  opacity:0;
+  transition:opacity 0.45s ease;
+}
+
+#fade.show{
+  opacity:1;
+}
+
+#resultCharacter{
+  width:200px;
+  margin-top:10px;
+  image-rendering:pixelated;
+}
+
+@media (max-height:650px){
+  #controls button{
+    width:62px;
+    height:62px;
+  }
+
+  #monkey{
+    width:62px;
+  }
+
+  #banana{
+    width:100px;
+  }
+}
