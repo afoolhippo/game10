@@ -10,28 +10,17 @@
 
 <div id="game">
 
-  <!-- タイトル -->
   <div id="titleScreen" class="screen active">
-
     <img id="titleImage" src="title.png" alt="サルトリイバラ">
-
     <div class="ruleText">
       トゲをよけて<br>
-      🍌をめざせ！
+      バナナをめざせ！
     </div>
-
-    <button id="startBtn">
-      タップしてスタート
-    </button>
-
+    <button id="startBtn">タップしてスタート</button>
   </div>
 
-  <!-- プレイ -->
   <div id="playScreen" class="screen">
-
-    <button id="backBtn">
-      タイトルへ戻る
-    </button>
+    <button id="backBtn">タイトルへ戻る</button>
 
     <div id="hud">
       <span id="stageText">STAGE 1</span>
@@ -52,34 +41,18 @@
 
     <div id="countdown"></div>
     <div id="fade"></div>
-
   </div>
 
-  <!-- 結果 -->
   <div id="resultScreen" class="screen">
-
-    <h2 id="resultTitle">RESULT</h2>
-
-    <img id="resultCharacter" src="result_normal.png">
-
+    <h2 id="resultTitle">称号</h2>
+    <img id="resultCharacter" src="result_normal.png" alt="result">
     <div id="resultMessage"></div>
 
     <div id="resultButtons">
-
-      <button id="shareBtn">
-        Xでシェア
-      </button>
-
-      <button id="retryBtn">
-        もう1回遊ぶ
-      </button>
-
-      <button id="homeBtn">
-        カバゲーセンへ
-      </button>
-
+      <button id="shareBtn">Xでシェア</button>
+      <button id="retryBtn">もう1回遊ぶ</button>
+      <button id="homeBtn">カバゲーセンへ</button>
     </div>
-
   </div>
 
 </div>
@@ -87,6 +60,5 @@
 <audio id="bgm" src="bgm.mp3" preload="auto"></audio>
 
 <script src="game.js"></script>
-
 </body>
 </html>

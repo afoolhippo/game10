@@ -42,19 +42,19 @@ body{
 #titleScreen,
 #resultScreen{
   text-align:center;
-  padding:20px;
+  padding:16px 20px;
 }
 
 #titleImage{
   width:100%;
-  margin-top:10px;
+  margin-top:8px;
   image-rendering:pixelated;
 }
 
 .ruleText{
-  margin-top:14px;
+  margin-top:12px;
   font-size:24px;
-  line-height:1.6;
+  line-height:1.55;
   color:#203018;
 }
 
@@ -68,16 +68,12 @@ button{
 #shareBtn,
 #homeBtn{
   width:260px;
-  padding:16px;
-  margin-top:16px;
-
-  font-size:20px;
-
+  padding:12px;
+  margin-top:10px;
+  font-size:18px;
   background:#f1f0c0;
   color:#203018;
-
   border:3px solid #203018;
-
   box-shadow:4px 4px 0 #65763f;
 }
 
@@ -98,16 +94,11 @@ button{
   top:10px;
   right:10px;
   z-index:30;
-
   padding:8px 10px;
-
   font-size:12px;
-
   background:#f1f0c0;
   color:#203018;
-
   border:2px solid #203018;
-
   opacity:0.9;
 }
 
@@ -116,16 +107,11 @@ button{
   top:10px;
   left:10px;
   z-index:20;
-
   display:flex;
   gap:18px;
-
   padding:8px 12px;
-
   background:rgba(241,240,192,0.92);
-
   border:2px solid #203018;
-
   font-size:18px;
   color:#203018;
 }
@@ -164,40 +150,27 @@ button{
   position:absolute;
   left:70px;
   top:320px;
-
   width:78px;
-
   z-index:10;
-
   transform:translateY(-50%);
-
   image-rendering:pixelated;
 }
 
 #banana{
   position:absolute;
-
   width:120px;
-
   z-index:5;
-
   transform:translate(-50%,-50%);
-
   image-rendering:pixelated;
 }
 
 #damageText{
   position:absolute;
   display:none;
-
   z-index:30;
-
   font-size:24px;
-
   color:#203018;
-
   text-shadow:2px 2px 0 #f1f0c0;
-
   pointer-events:none;
 }
 
@@ -207,32 +180,17 @@ button{
 }
 
 @keyframes damagePop{
-  0%{
-    opacity:0;
-    transform:translateY(8px) scale(0.8);
-  }
-
-  30%{
-    opacity:1;
-    transform:translateY(-4px) scale(1.15);
-  }
-
-  100%{
-    opacity:0;
-    transform:translateY(-18px) scale(1);
-  }
+  0%{ opacity:0; transform:translateY(8px) scale(0.8); }
+  30%{ opacity:1; transform:translateY(-4px) scale(1.15); }
+  100%{ opacity:0; transform:translateY(-18px) scale(1); }
 }
 
 #controls{
   position:absolute;
-
   bottom:14px;
   left:50%;
-
   transform:translateX(-50%);
-
   z-index:15;
-
   display:flex;
   gap:20px;
 }
@@ -240,14 +198,10 @@ button{
 #controls button{
   width:74px;
   height:74px;
-
   background:#f1f0c0;
-
   border:3px solid #203018;
-
   font-size:30px;
   color:#203018;
-
   box-shadow:4px 4px 0 #65763f;
 }
 
@@ -259,21 +213,14 @@ button{
 #countdown{
   position:absolute;
   inset:0;
-
   z-index:999;
-
   display:none;
-
   align-items:center;
   justify-content:center;
   flex-direction:column;
-
   text-align:center;
-
   color:#203018;
-
   background:rgba(219,233,184,0.7);
-
   text-shadow:3px 3px 0 #f1f0c0;
 }
 
@@ -289,15 +236,10 @@ button{
 #fade{
   position:absolute;
   inset:0;
-
   z-index:500;
-
   pointer-events:none;
-
   background:#203018;
-
   opacity:0;
-
   transition:opacity 0.45s ease;
 }
 
@@ -305,30 +247,30 @@ button{
   opacity:1;
 }
 
+#resultTitle{
+  margin:38px 0 0;
+  font-size:30px;
+  color:#203018;
+}
+
 #resultCharacter{
-  width:210px;
-
-  margin-top:12px;
-
+  width:165px;
+  margin-top:4px;
   image-rendering:pixelated;
 }
 
 #resultMessage{
-  margin-top:12px;
-
-  font-size:26px;
-
-  line-height:1.8;
-
+  margin-top:4px;
+  font-size:22px;
+  line-height:1.4;
   color:#203018;
 }
 
 #resultButtons{
-  margin-top:12px;
+  margin-top:4px;
 }
 
 @media (max-height:650px){
-
   #controls button{
     width:62px;
     height:62px;
@@ -346,4 +288,16 @@ button{
     font-size:90px;
   }
 
+  #resultCharacter{
+    width:135px;
+  }
+
+  #startBtn,
+  #retryBtn,
+  #shareBtn,
+  #homeBtn{
+    padding:10px;
+    margin-top:8px;
+    font-size:16px;
+  }
 }

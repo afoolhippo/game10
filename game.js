@@ -65,6 +65,9 @@ const maxHp = 5;
 const maxStage = 5;
 const monkeyX = 80;
 
+const playVolume = 0.6;
+const countdownVolume = 0.15;
+
 const gameUrl = "https://afoolhippo.github.io/game10/";
 const homeUrl = "https://afoolhippo.github.io/home/?skipTitle=1";
 
@@ -93,21 +96,22 @@ function startBGM(){
   bgm.loop = true;
 
   if(bgm.paused){
-    bgm.volume = 0.5;
+    bgm.volume = countdownVolume;
     bgm.play().catch(()=>{});
   }
 }
 
 function stopBGM(){
-  if(!bgm) return;
-
   if(bgmFadeTimer){
     clearInterval(bgmFadeTimer);
     bgmFadeTimer = null;
   }
 
-  bgm.pause();
-  bgm.currentTime = 0;
+  if(bgm){
+    bgm.pause();
+    bgm.currentTime = 0;
+    bgm.volume = 0;
+  }
 }
 
 function setBGMVolume(volume){
@@ -184,7 +188,7 @@ function prepareStage(withCountdown){
 }
 
 function startStage(){
-  fadeBGMTo(1, 900);
+  fadeBGMTo(playVolume, 900);
 
   playing = true;
   lastTime = performance.now();
@@ -195,7 +199,7 @@ function startStage(){
 function runCountdown(callback){
   let count = 3;
 
-  setBGMVolume(0.5);
+  setBGMVolume(countdownVolume);
 
   countdown.style.display = "flex";
 
@@ -226,10 +230,10 @@ function runCountdown(callback){
 function updateDifficulty(){
   const progress = stage - 1;
 
-  gapHeight = Math.max(80, 150 - progress * 17);
-  scrollSpeed = 2.35 + progress * 0.22;
-  wavePower = 70 + progress * 18;
-  thornInterval = Math.max(36, 70 - progress * 8);
+  gapHeight = Math.max(90, 150 - progress * 14);
+  scrollSpeed = 2.35 + progress * 0.18;
+  wavePower = 70 + progress * 14;
+  thornInterval = Math.max(40, 70 - progress * 7);
 }
 
 function updateHUD(){
@@ -438,9 +442,9 @@ function damage(){
   playSE(seDamage);
 
   if(hp <= 2){
-    monkey.src = "result_bad.png";
-  }else{
     monkey.src = "result_normal.png";
+  }else{
+    monkey.src = "saru.png";
   }
 
   updateHUD();
@@ -479,6 +483,8 @@ function checkBandages(){
 
       if(hp >= 3){
         monkey.src = "saru.png";
+      }else{
+        monkey.src = "result_normal.png";
       }
 
       updateHUD();
@@ -499,7 +505,7 @@ function getRankName(clearedStage){
     return "半泣きモンキー";
   }
 
-  if(clearedStage <= 3){
+  if(clearedStage <= 4){
     return "汗だくモンキー";
   }
 
@@ -511,7 +517,7 @@ function getResultImage(clearedStage){
     return "result_bad.png";
   }
 
-  if(clearedStage <= 3){
+  if(clearedStage <= 4){
     return "result_normal.png";
   }
 
@@ -539,7 +545,7 @@ ${gameUrl}
   if(clearedStage <= 1){
     return `トゲだらけになった…🌿🐒
 
-STAGE ${reachedStage}
+クリア ${clearedStage} 面
 
 ${rank}
 
@@ -551,24 +557,9 @@ ${gameUrl}
 #カバゲーセン`;
   }
 
-  if(clearedStage <= 3){
-    return `イバラをくぐり抜けた…！🌿💦🐒
+  return `イバラをくぐり抜けた…！🌿💦🐒
 
-STAGE ${reachedStage}
-
-${rank}
-
-無料ブラウザゲーム
-「サルトリイバラ」
-${gameUrl}
-
-#サルトリイバラ
-#カバゲーセン`;
-  }
-
-  return `サルトリモンキーになった🍌🐒
-
-STAGE ${reachedStage}
+クリア ${clearedStage} 面
 
 ${rank}
 
@@ -616,20 +607,15 @@ function showResult(clearedStage, reachedStage, isClear){
   showScreen(resultScreen);
   fade.classList.remove("show");
 
-  resultTitle.textContent = isClear ? "CLEAR!" : "RESULT";
+  const rank = getRankName(clearedStage);
+
+  resultTitle.textContent = rank;
   resultCharacter.src = getResultImage(clearedStage);
 
   if(isClear){
-    resultMessage.innerHTML = `
-      全5面クリア！<br><br>
-      ${getRankName(clearedStage)}
-    `;
+    resultMessage.innerHTML = `全5面クリア！`;
   }else{
-    resultMessage.innerHTML = `
-      到達 STAGE ${reachedStage}<br>
-      クリア ${clearedStage} 面<br><br>
-      ${getRankName(clearedStage)}
-    `;
+    resultMessage.innerHTML = `クリア ${clearedStage} 面`;
   }
 
   shareBtn.onclick = ()=>{
@@ -766,6 +752,8 @@ retryBtn.addEventListener("click", ()=>{
   playing = false;
   inputDir = 0;
   velocityY = 0;
+  countdown.style.display = "none";
+  fade.classList.remove("show");
   showScreen(titleScreen);
 });
 
@@ -774,6 +762,8 @@ backBtn.addEventListener("click", ()=>{
   playing = false;
   inputDir = 0;
   velocityY = 0;
+  countdown.style.display = "none";
+  fade.classList.remove("show");
   showScreen(titleScreen);
 });
 
