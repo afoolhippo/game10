@@ -747,6 +747,9 @@ window.addEventListener("keyup", (e)=>{
 
 startBtn.addEventListener("click", startGame);
 
+const titleImage = document.getElementById("titleImage");
+titleImage.addEventListener("click", startGame);
+
 retryBtn.addEventListener("click", ()=>{
   stopBGM();
   playing = false;
